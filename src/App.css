@@ -15,6 +15,16 @@ table, th, td {
     border: 1px solid black;
     border-collapse: collapse;
 }
+th{
+    background-color: rgb(0, 171, 197);
+    color: white;
+    font-weight: bold;   
+}
+td{
+    background-color: rgb(199, 236, 241);
+    /* color: white; */
+    /* font-weight: bold; */
+}
 th,td{
     padding: 5px;
     align-items: center;
@@ -33,6 +43,12 @@ button{
 input{
     padding: 2px;
     width: 180px;
+}
+
+.pagination{
+    font-weight: bold;
+    border: none;
+    padding: 0 10px;
 }
 
 /* popup-css */

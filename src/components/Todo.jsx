@@ -23,6 +23,7 @@ const Todo = () => {
   const [email, setEmail] = useState("")
   const [department, setDepartment] = useState("")
   const [showPopup, setshowPopup] = useState(false)
+  const [page, setPage] = useState(1)
 
 
   //get request
@@ -64,7 +65,7 @@ const Todo = () => {
   const handleAdd = async (event) => {
     event.preventDefault();
     try {
-      const combinedName = `${addData.firstName} ${addData.lastName}`; 
+      const combinedName = `${addData.firstName} ${addData.lastName}`;
       const postData = {
         id: addData.id,
         name: combinedName,
@@ -92,96 +93,98 @@ const Todo = () => {
     }
   };
 
-  //delete functionality
-  const handleDelete = (index) => {
-    const newData = [...data];
-    newData.splice(index, 1); 
-    // alert("Data deleted Successfully!")
-    toast.success("Data deleted successfully!")
-    setData(newData); 
+  //delete function axios delete request
+  const handleDelete = async (index) => {
+    try {
+      await axios.delete(`https://jsonplaceholder.typicode.com/users/${index}`);
+      const newData = [...data];
+      newData.splice(index, 1);
+      setData(newData);
+      toast.success("Data deleted successfully!");
+    } catch (error) {
+      console.log(error);
+    }
   };
-
-
 
 
   return (
     <>
-    <div className='main-div'>
-      <div className='pages-div'>
-      <button onClick={() => setshowPopup(true)} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-        AddNew <Toaster /><span style={{ marginTop: "5px" }}><FaPlus /></span>
-      </button>
-      <div>
-        <button>Prev</button>
-        <span>Page: 1</span>
-        <button>Next</button>
-      </div>
-      </div>
-      
-
-      <table>
-        <tr>
-          <th>Id</th>
-          <th>User firstName</th>
-          <th>User lastName</th>
-          <th>Email</th>
-          <th>Department</th>
-          <th>Actions</th>
-        </tr>
-        {data?.map(function (ele, index) {
-          return <tr key={index}>
-            <td>{ele.id}</td>
-            <td>{editIndex === index ? <input onChange={(e) => setName(e.target.value)} type="text" defaultValue={ele.name.split(' ')[0]} /> : `${ele.name.split(' ')[0]}`}</td>
-            <td>{editIndex === index ? <input onChange={(e) => setLastName(e.target.value)} type="text" defaultValue={ele.name.split(' ')[1]} /> : `${ele.name.split(' ')[1]}`}</td>
-            <td>{editIndex === index ? <input onChange={(e) => setEmail(e.target.value)} type="email" defaultValue={ele.email} /> : `${ele.email}`}</td>
-            <td>{editIndex === index ? <input onChange={(e) => setDepartment(e.target.value)} type="text" defaultValue={ele.company.name} /> : `${ele.company.name}`}</td>
-            <td className="actions-btn">
-              {editIndex === index ? (
-                <button onClick={() => handleUpdate(index)}>Update <span><MdOutlineBrowserUpdated /></span></button>
-              ) : (
-                <button onClick={() => handleEdit(index)}>Edit <span><MdEdit /></span></button>
-              )}
-              <button  onClick={() => handleDelete(index)}>Delete<span><MdDelete /></span></button>
-              <Toaster /></td>
-          </tr>
-        })}
-      </table>
-      {showPopup && (
-        <React.Fragment>
-          <div className='backdrop' ></div>
-          <div className='store-add-div'>
-            <form onSubmit={handleAdd}>
-              <h2>Add User</h2>
-              <input type="number" name='id' placeholder='Enter Id' 
-              value={addData.id} 
-              onChange={(e) => setAddData({ ...addData, id: e.target.value })} />
-
-              <input type="text" name="firstName" placeholder='Enter firstName' 
-              value={addData.firstName} 
-              onChange={(e) => setAddData({ ...addData, firstName: e.target.value })} />
-
-              <input type="text" name="lastName" placeholder='Enter lastName' 
-              value={addData.lastName} 
-              onChange={(e) => setAddData({ ...addData, lastName: e.target.value })} />
-
-              <input type="email" name="email" placeholder='Enter Email' 
-              value={addData.email} 
-              onChange={(e) => setAddData({ ...addData, email: e.target.value })} />
-
-              <input type="text" name="department" placeholder='Enter department' 
-              value={addData.department} 
-              onChange={(e) => setAddData({ ...addData, department: e.target.value })} />
-
-              <button style={{ backgroundColor: "rgb(0, 171, 197)", border: "none", color: "white", fontWeight: "bold", cursor: "pointer" }} type="submit">Add</button>
-            </form>
-
-            <div>
-              <button style={{ marginTop: "20px", cursor: "pointer", backgroundColor: "rgb(0, 171, 197)", border: "none", color: "white", fontWeight: "bold", padding: "0 5px" }} onClick={() => setshowPopup(false)}>Cancel</button>
-            </div>
+      <div className='main-div'>
+        <div className='pages-div'>
+          <button onClick={() => setshowPopup(true)} style={{ display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgb(76,182,57)", border: "none" }}>
+            AddNew <Toaster /><span style={{ marginTop: "5px" }}><FaPlus /></span>
+          </button>
+          <div>
+            <button className='pagination' disabled={page == 1} onClick={() => setPage(page - 1)}>Prev</button>
+            <span>Page: {page}</span>
+            <button className='pagination' disabled={page == 2} onClick={() => setPage(page + 1)}>Next</button>
           </div>
-        </React.Fragment>
-      )}
-    </div>  
+        </div>
+
+
+        <table>
+          <tr>
+            <th>Id</th>
+            <th>User firstName</th>
+            <th>User lastName</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Actions</th>
+          </tr>
+          {data?.slice((page - 1) * 10, (page - 1) * 10 + 10).map(function (ele, index) {
+            return <tr key={index}>
+              <td>{ele.id}</td>
+              <td>{editIndex === index ? <input onChange={(e) => setName(e.target.value)} type="text" defaultValue={ele.name.split(' ')[0]} /> : `${ele.name.split(' ')[0]}`}</td>
+              <td>{editIndex === index ? <input onChange={(e) => setLastName(e.target.value)} type="text" defaultValue={ele.name.split(' ')[1]} /> : `${ele.name.split(' ')[1]}`}</td>
+              <td>{editIndex === index ? <input onChange={(e) => setEmail(e.target.value)} type="email" defaultValue={ele.email} /> : `${ele.email}`}</td>
+              <td>{editIndex === index ? <input onChange={(e) => setDepartment(e.target.value)} type="text" defaultValue={ele.company.name} /> : `${ele.company.name}`}</td>
+              <td className="actions-btn">
+                {editIndex === index ? (
+                  <button style={{ backgroundColor: "green", fontWeight: "bold", color: "white", border: "none" }} onClick={() => handleUpdate(index)}>Update <span><MdOutlineBrowserUpdated /></span></button>
+                ) : (
+                  <button style={{ backgroundColor: "green", fontWeight: "bold", color: "white", border: "none" }} onClick={() => handleEdit(index)}>Edit <span><MdEdit /></span></button>
+                )}
+                <button style={{ backgroundColor: "red", fontWeight: "bold", color: "white", border: "none" }} onClick={() => handleDelete(index)}>Delete<span><MdDelete /></span></button>
+                <Toaster /></td>
+            </tr>
+          })}
+        </table>
+        {showPopup && (
+          <React.Fragment>
+            <div className='backdrop' ></div>
+            <div className='store-add-div'>
+              <form onSubmit={handleAdd}>
+                <h2>Add User</h2>
+                <input type="number" name='id' placeholder='Enter Id'
+                  value={addData.id}
+                  onChange={(e) => setAddData({ ...addData, id: e.target.value })} />
+
+                <input type="text" name="firstName" placeholder='Enter firstName'
+                  value={addData.firstName}
+                  onChange={(e) => setAddData({ ...addData, firstName: e.target.value })} />
+
+                <input type="text" name="lastName" placeholder='Enter lastName'
+                  value={addData.lastName}
+                  onChange={(e) => setAddData({ ...addData, lastName: e.target.value })} />
+
+                <input type="email" name="email" placeholder='Enter Email'
+                  value={addData.email}
+                  onChange={(e) => setAddData({ ...addData, email: e.target.value })} />
+
+                <input type="text" name="department" placeholder='Enter department'
+                  value={addData.department}
+                  onChange={(e) => setAddData({ ...addData, department: e.target.value })} />
+
+                <button style={{ backgroundColor: "rgb(76,182,57)", border: "none", color: "white", fontWeight: "bold", cursor: "pointer" }} type="submit">Add</button>
+              </form>
+
+              <div>
+                <button style={{ marginTop: "20px", cursor: "pointer", backgroundColor: "red", border: "none", color: "white", fontWeight: "bold", padding: "0 5px" }} onClick={() => setshowPopup(false)}>Cancel</button>
+              </div>
+            </div>
+          </React.Fragment>
+        )}
+      </div>
     </>
   )
 }

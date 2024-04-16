@@ -5,7 +5,7 @@ function App() {
 
   return (
     <>
-      <h2 style={{textAlign:"center",fontWeight:"bold",marginTop:"10px"}}>User Management Dashboard</h2>
+      <h2 style={{textAlign:"center",fontWeight:"bold",marginTop:"10px",textDecoration:"underline"}}>User Management Dashboard</h2>
       <Todo/>
     </>
   )
