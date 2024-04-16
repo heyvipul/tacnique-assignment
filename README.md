@@ -12,7 +12,7 @@
 <p>1. clone the following repository in you code-editor</p>
 
 ```
-[git clone https://github.com/heyvipul/arba-fullstack-assignment
+git clone https://github.com/heyvipul/arba-fullstack-assignment
 ```
 
 <p>2. run the following command to download the dependencies</p>
@@ -47,10 +47,11 @@ Technologies used in the project:
 
 ### project endpoints 
 ```
+/https://jsonplaceholder.typicode.com/
 /users     get  request
 /users     post request
 /users/:id put request
-/users     delete request
+/users/:id delete request
 
 ```
 
